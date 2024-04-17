@@ -16,7 +16,12 @@ var (
 )
 
 var (
-	Files = []string{}
+	userActions = []string{"Ver archivos"}
+)
+
+var (
+	Files    = []string{}
+	Comments = []string{}
 )
 
 func main() {
@@ -114,8 +119,31 @@ func adminMenu() {
 }
 
 func createFile() {
-	Files = append(Files, fmt.Sprintf("file %d", len(Files)+1))
-	fmt.Println("Archivo creado exitosamente")
+	//filename := fmt.Sprintf("texto_%s.txt", time.Now().Format("2006-01-02_15-04-05"))
+	fmt.Println("ingrese el nombre del archivo a crear: ")
+	var filename string
+	fmt.Scanln(&filename)
+	Files = append(Files, filename)
+
+	file, err := os.Create(filename)
+	if err != nil {
+		fmt.Println("Error al crear archivo: %v\n", err)
+		return
+
+	}
+	defer file.Close()
+	for _, Files := range Files {
+		_, err := file.WriteString(fmt.Sprintf("%s\n", Files))
+		if err != nil {
+			fmt.Println("Error al escribir el archivo: %v\n", err)
+			return
+		}
+	}
+	fmt.Printf("Archivo %s creado exitosamente.\n", filename)
+
+	//contador de caracteres
+	letterCount := len(filename)
+	fmt.Println("cantidad de lentras en el nombre edl archivo: ", letterCount)
 }
 
 func deleteFile() {
@@ -125,8 +153,34 @@ func deleteFile() {
 	}
 	Files = Files[:len(Files)-1]
 	fmt.Println("Archivo eliminado exitosamente")
+	for i := 0; i < len(Files); i++ {
+		fmt.Println(Files[i])
+
+	}
 }
 
 func userMenu() {
+	fmt.Println("Menu de usuario")
+	for i, action := range userActions {
+		fmt.Printf("%d. %s\n", i+1, action)
+	}
+	fmt.Println("0. Cerrar sesión")
+
+	var choice int
+	fmt.Println("Seleccione su opcion: ")
+	fmt.Scanln(&choice)
+
+	switch choice {
+	case 1:
+		fmt.Println("Ver archivos")
+		fmt.Println(Files)
+		return
+	case 0:
+		fmt.Println("Cerrar sesión de usuario")
+		return
+	default:
+		fmt.Println("Seleccione una opcion valida")
+
+	}
 
 }
